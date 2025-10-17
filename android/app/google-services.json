@@ -1,0 +1,25 @@
+{
+    "project_info": {
+        "project_number": "986125924369",
+        "project_id": "pancasila-7aa87",
+        "storage_bucket": "pancasila-7aa87.firebasestorage.app"
+    },
+    "client": [{
+        "client_info": {
+            "mobilesdk_app_id": "1:986125924369:android:7f8cc06ba14c13fb1419b0",
+            "android_client_info": {
+                "package_name": "com.example.pancasila"
+            }
+        },
+        "oauth_client": [],
+        "api_key": [{
+            "current_key": "AIzaSyDIOc0msuldOdnCVKMrDPWnkOo6nRE5PfM"
+        }],
+        "services": {
+            "appinvite_service": {
+                "other_platform_oauth_client": []
+            }
+        }
+    }],
+    "configuration_version": "1"
+}
