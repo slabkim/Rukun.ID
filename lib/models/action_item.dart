@@ -9,6 +9,7 @@ class ActionItem {
   final String needs;
   final String createdBy;
   final List<String> participants;
+  final int capacity;
 
   ActionItem({
     required this.id,
@@ -19,6 +20,7 @@ class ActionItem {
     required this.needs,
     required this.createdBy,
     required this.participants,
+    required this.capacity,
   });
 
   int get participantCount => participants.length;
@@ -31,6 +33,7 @@ class ActionItem {
         'needs': needs,
         'createdBy': createdBy,
         'participants': participants,
+        'capacity': capacity,
       };
 
   factory ActionItem.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -44,6 +47,7 @@ class ActionItem {
       needs: data['needs'] ?? '',
       createdBy: data['createdBy'] ?? '',
       participants: (data['participants'] as List?)?.cast<String>() ?? <String>[],
+      capacity: (data['capacity'] as num?)?.toInt() ?? 10,
     );
   }
 }

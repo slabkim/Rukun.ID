@@ -1,0 +1,2 @@
+- [x] Edit lib/screens/actions_tab.dart to add SizedBox(height: 16) between form fields in \_showCreateDialog
+- [x] Edit lib/screens/polls_tab.dart to add SizedBox(height: 16) between form fields in \_showCreatePollDialog

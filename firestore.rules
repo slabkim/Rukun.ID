@@ -4,24 +4,31 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
 
+    function isAdmin() {
+      return request.auth != null &&
+        ('Admin' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.badges);
+    }
+
     match /actions/{id} {
       allow read: if true;
       allow create: if signedIn();
       allow update: if signedIn();
-      allow delete: if false;
+      allow delete: if isAdmin();
     }
 
     match /polls/{id} {
       allow read: if true;
       allow create: if signedIn();
       allow update: if signedIn();
-      allow delete: if false;
+      allow delete: if isAdmin();
     }
 
     match /users/{uid} {
-      allow read: if request.auth != null && request.auth.uid == uid;
+      // Allow any authenticated user to read basic profile info (name, rt, badges, points)
+      // Consider tightening this for production if needed.
+      allow read: if signedIn();
       allow create: if signedIn();
-      allow update: if request.auth != null && request.auth.uid == uid;
+      allow update: if request.auth != null && (request.auth.uid == uid || isAdmin());
     }
   }
 }

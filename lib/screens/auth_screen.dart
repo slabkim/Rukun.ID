@@ -100,7 +100,7 @@ class _AuthScreenState extends State<AuthScreen> {
     final email = _emailCtrl.text.trim();
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Isi email untuk reset sandi')), 
+        const SnackBar(content: Text('Isi email untuk reset sandi')),
       );
       return;
     }
@@ -108,7 +108,7 @@ class _AuthScreenState extends State<AuthScreen> {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Email reset sandi terkirim')), 
+          const SnackBar(content: Text('Email reset sandi terkirim')),
         );
       }
     } on FirebaseAuthException catch (e) {
@@ -159,11 +159,15 @@ class _AuthScreenState extends State<AuthScreen> {
                               child: Form(
                                 key: _formKey,
                                 child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
                                   children: [
                                     Text(
                                       isRegister ? 'Daftar Akun' : 'Masuk',
-                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge
+                                          ?.copyWith(
                                             color: cs.primary,
                                             fontWeight: FontWeight.w700,
                                           ),
@@ -175,7 +179,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                         controller: _nameCtrl,
                                         decoration: const InputDecoration(
                                           labelText: 'Nama (opsional)',
-                                          prefixIcon: Icon(Icons.person_outline),
+                                          prefixIcon:
+                                              Icon(Icons.person_outline),
                                         ),
                                       ),
                                       const SizedBox(height: 12),
@@ -183,8 +188,11 @@ class _AuthScreenState extends State<AuthScreen> {
                                     TextFormField(
                                       controller: _emailCtrl,
                                       keyboardType: TextInputType.emailAddress,
-                                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                                      validator: (v) => (v == null || v.trim().isEmpty || !v.contains('@'))
+                                      autovalidateMode:
+                                          AutovalidateMode.onUserInteraction,
+                                      validator: (v) => (v == null ||
+                                              v.trim().isEmpty ||
+                                              !v.contains('@'))
                                           ? 'Masukkan email yang valid'
                                           : null,
                                       decoration: const InputDecoration(
@@ -196,16 +204,22 @@ class _AuthScreenState extends State<AuthScreen> {
                                     TextFormField(
                                       controller: _passwordCtrl,
                                       obscureText: _obscure,
-                                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                                      validator: (v) => (v == null || v.length < 6)
-                                          ? 'Minimal 6 karakter'
-                                          : null,
+                                      autovalidateMode:
+                                          AutovalidateMode.onUserInteraction,
+                                      validator: (v) =>
+                                          (v == null || v.length < 6)
+                                              ? 'Minimal 6 karakter'
+                                              : null,
                                       decoration: InputDecoration(
                                         labelText: 'Kata Sandi',
-                                        prefixIcon: const Icon(Icons.lock_outline),
+                                        prefixIcon:
+                                            const Icon(Icons.lock_outline),
                                         suffixIcon: IconButton(
-                                          onPressed: () => setState(() => _obscure = !_obscure),
-                                          icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                                          onPressed: () => setState(
+                                              () => _obscure = !_obscure),
+                                          icon: Icon(_obscure
+                                              ? Icons.visibility_outlined
+                                              : Icons.visibility_off_outlined),
                                         ),
                                       ),
                                     ),
@@ -214,11 +228,16 @@ class _AuthScreenState extends State<AuthScreen> {
                                       TextFormField(
                                         controller: _confirmCtrl,
                                         obscureText: true,
-                                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                                        validator: (v) => v != _passwordCtrl.text ? 'Konfirmasi tidak cocok' : null,
+                                        autovalidateMode:
+                                            AutovalidateMode.onUserInteraction,
+                                        validator: (v) =>
+                                            v != _passwordCtrl.text
+                                                ? 'Konfirmasi tidak cocok'
+                                                : null,
                                         decoration: const InputDecoration(
                                           labelText: 'Konfirmasi Kata Sandi',
-                                          prefixIcon: Icon(Icons.lock_reset_outlined),
+                                          prefixIcon:
+                                              Icon(Icons.lock_reset_outlined),
                                         ),
                                       ),
                                     ],
@@ -227,7 +246,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                       Align(
                                         alignment: Alignment.centerRight,
                                         child: TextButton(
-                                          onPressed: _loading ? null : _resetPassword,
+                                          onPressed:
+                                              _loading ? null : _resetPassword,
                                           child: const Text('Lupa kata sandi?'),
                                         ),
                                       ),
@@ -235,35 +255,47 @@ class _AuthScreenState extends State<AuthScreen> {
                                     FilledButton(
                                       onPressed: _loading ? null : _submit,
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 12),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 12),
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             if (_loading) ...[
                                               const SizedBox(
                                                 width: 18,
                                                 height: 18,
-                                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                                child:
+                                                    CircularProgressIndicator(
+                                                        strokeWidth: 2,
+                                                        color: Colors.white),
                                               ),
                                               const SizedBox(width: 8),
                                             ],
-                                            Text(isRegister ? 'Daftar' : 'Masuk'),
+                                            Text(isRegister
+                                                ? 'Daftar'
+                                                : 'Masuk'),
                                           ],
                                         ),
                                       ),
                                     ),
                                     const SizedBox(height: 12),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
-                                        Text(isRegister ? 'Sudah punya akun?' : 'Belum punya akun?'),
+                                        Text(isRegister
+                                            ? 'Sudah punya akun?'
+                                            : 'Belum punya akun?'),
                                         TextButton(
                                           onPressed: _loading
                                               ? null
-                                              : () => setState(() => isRegister = !isRegister),
+                                              : () => setState(() =>
+                                                  isRegister = !isRegister),
                                           child: Text(
                                             isRegister ? 'Masuk' : 'Daftar',
-                                            style: TextStyle(color: cs.secondary),
+                                            style:
+                                                TextStyle(color: cs.secondary),
                                           ),
                                         )
                                       ],
@@ -371,14 +403,30 @@ class _FunTips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        _Pill(color: colors.tertiary, icon: Icons.military_tech_outlined, text: '+ Poin'),
-        const SizedBox(width: 10),
-        _Pill(color: colors.secondary, icon: Icons.how_to_vote_outlined, text: 'Musyawarah'),
-        const SizedBox(width: 10),
-        _Pill(color: colors.primary, icon: Icons.handshake_outlined, text: 'Aksi'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+                child: _Pill(
+                    color: colors.tertiary,
+                    icon: Icons.military_tech_outlined,
+                    text: '+ Poin')),
+            const SizedBox(width: 10),
+            Expanded(
+                child: _Pill(
+                    color: colors.primary,
+                    icon: Icons.handshake_outlined,
+                    text: 'Aksi')),
+          ],
+        ),
+        const SizedBox(height: 10),
+        _Pill(
+            color: colors.secondary,
+            icon: Icons.how_to_vote_outlined,
+            text: 'Musyawarah'),
       ],
     );
   }
@@ -401,10 +449,12 @@ class _Pill extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, color: color, size: 18),
           const SizedBox(width: 8),
-          Text(text, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
+          Text(text,
+              style: TextStyle(color: color, fontWeight: FontWeight.w600)),
         ],
       ),
     );

@@ -2,22 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'screens/home_screen.dart';
 import 'screens/auth_screen.dart';
+import 'screens/onboarding_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'services/firestore_service.dart';
+import 'screens/admin_panel_screen.dart';
 
 class RukunApp extends StatelessWidget {
   const RukunApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF134686); // Biru gelap
-    const secondary = Color(0xFFED3F27); // Merah-oranye
-    const tertiary = Color(0xFFFEB21A); // Kuning aksen
-    const background = Color(0xFFFDF4E3); // Krem terang
+    const primary = Color(0xFF2563EB); // Biru utama
+    const background = Color(0xFFF9FAFB); // Putih bersih
 
     final scheme = ColorScheme.fromSeed(
       seedColor: primary,
       primary: primary,
-      secondary: secondary,
-      tertiary: tertiary,
       surface: Colors.white,
       brightness: Brightness.light,
     );
@@ -25,57 +26,56 @@ class RukunApp extends StatelessWidget {
     return MaterialApp(
       title: 'Rukun.ID',
       debugShowCheckedModeBanner: false,
+      routes: {
+        '/admin': (_) => const _AdminGate(),
+      },
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: scheme,
         scaffoldBackgroundColor: background,
+        textTheme: GoogleFonts.poppinsTextTheme(),
         appBarTheme: const AppBarTheme(
-          backgroundColor: background,
+          backgroundColor: Colors.transparent,
           foregroundColor: primary,
           centerTitle: true,
           elevation: 0,
+          scrolledUnderElevation: 1,
+          shadowColor: Color(0x1A000000), // black12
+          surfaceTintColor: Colors.transparent,
         ),
         cardTheme: CardThemeData(
           color: Colors.white,
-          elevation: 1,
+          elevation: 2,
+          shadowColor: Color(0x14000000), // black08
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
         ),
         chipTheme: ChipThemeData(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          backgroundColor: primary.withOpacity(0.07),
-          selectedColor: tertiary.withOpacity(0.2),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          backgroundColor: primary.withOpacity(0.06),
+          selectedColor: primary.withOpacity(0.12),
           labelStyle: const TextStyle(color: Colors.black87),
         ),
-        filledButtonTheme: FilledButtonThemeData(
-          style: FilledButton.styleFrom(
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
             backgroundColor: primary,
             foregroundColor: Colors.white,
+            elevation: 0,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           ),
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: secondary,
+          backgroundColor: primary,
           foregroundColor: Colors.white,
-        ),
-        navigationBarTheme: NavigationBarThemeData(
-          backgroundColor: background,
-          indicatorColor: tertiary.withOpacity(0.3),
-          indicatorShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          labelTextStyle: WidgetStateProperty.resolveWith(
-            (states) => TextStyle(
-              color: states.contains(WidgetState.selected) ? primary : Colors.black54,
-              fontWeight: states.contains(WidgetState.selected) ? FontWeight.w600 : FontWeight.w400,
-            ),
-          ),
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: primary.withOpacity(0.2)),
+            borderSide: BorderSide(color: primary.withOpacity(0.15)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -84,7 +84,7 @@ class RukunApp extends StatelessWidget {
           contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         ),
       ),
-      home: const AuthGate(),
+      home: const _RootGate(),
     );
   }
 }
@@ -109,5 +109,87 @@ class AuthGate extends StatelessWidget {
         return const HomeScreen();
       },
     );
+  }
+}
+
+class _RootGate extends StatefulWidget {
+  const _RootGate();
+  @override
+  State<_RootGate> createState() => _RootGateState();
+}
+
+class _RootGateState extends State<_RootGate> {
+  bool? _seenOnboarding;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFlag();
+  }
+
+  Future<void> _loadFlag() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _seenOnboarding = prefs.getBool('onboarding_done') ?? false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_seenOnboarding == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (_seenOnboarding == false) {
+      return OnboardingScreen(onDone: () async {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('onboarding_done', true);
+        if (!mounted) return;
+        setState(() => _seenOnboarding = true);
+      });
+    }
+    return const AuthGate();
+  }
+}
+
+class _AdminGate extends StatelessWidget {
+  const _AdminGate({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<bool>(
+      stream: FirestoreAuthBridge.streamIsAdmin(),
+      builder: (context, snap) {
+        if (!snap.hasData) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+        final isAdmin = snap.data == true;
+        if (!isAdmin) {
+          return const Scaffold(body: Center(child: Text('Akses ditolak')));
+        }
+        return const _AdminPanelLoader();
+      },
+    );
+  }
+}
+
+class _AdminPanelLoader extends StatelessWidget {
+  const _AdminPanelLoader();
+  @override
+  Widget build(BuildContext context) {
+    // Lazy import to avoid circular dep in route table
+    return const _AdminPanelEmbed();
+  }
+}
+
+// Small bridge to avoid direct import at top
+class FirestoreAuthBridge {
+  static Stream<bool> streamIsAdmin() => FirestoreService.instance.streamIsAdmin();
+}
+
+// Indirection widget to import the admin screen
+class _AdminPanelEmbed extends StatelessWidget {
+  const _AdminPanelEmbed();
+  @override
+  Widget build(BuildContext context) {
+    return const AdminPanelScreen();
   }
 }

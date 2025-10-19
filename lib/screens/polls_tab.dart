@@ -29,18 +29,22 @@ class PollsTab extends StatelessWidget {
           }
           final polls = snapshot.data ?? [];
           if (polls.isEmpty) {
-            return const Center(child: Text('Belum ada musyawarah. Tambahkan dengan tombol +'));
+            return const Center(
+                child: Text('Belum ada musyawarah. Tambahkan dengan tombol +'));
           }
           return ListView.builder(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
             itemCount: polls.length,
             itemBuilder: (context, i) => PollCard(poll: polls[i]),
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showCreatePollDialog(context),
-        child: const Icon(Icons.add),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 88),
+        child: FloatingActionButton(
+          onPressed: () => _showCreatePollDialog(context),
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
@@ -59,19 +63,31 @@ class PollsTab extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(controller: tCtrl, decoration: const InputDecoration(labelText: 'Judul')),
-              TextField(controller: o1, decoration: const InputDecoration(labelText: 'Opsi 1')),
-              TextField(controller: o2, decoration: const InputDecoration(labelText: 'Opsi 2')),
+              TextField(
+                  controller: tCtrl,
+                  decoration: const InputDecoration(labelText: 'Judul')),
+              const SizedBox(height: 16),
+              TextField(
+                  controller: o1,
+                  decoration: const InputDecoration(labelText: 'Opsi 1')),
+              const SizedBox(height: 16),
+              TextField(
+                  controller: o2,
+                  decoration: const InputDecoration(labelText: 'Opsi 2')),
             ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal')),
           FilledButton(
             onPressed: () async {
               final poll = Poll(
                 id: 'new',
-                title: tCtrl.text.trim().isEmpty ? 'Jadwal Kerja Bakti' : tCtrl.text.trim(),
+                title: tCtrl.text.trim().isEmpty
+                    ? 'Jadwal Kerja Bakti'
+                    : tCtrl.text.trim(),
                 options: [o1.text.trim(), o2.text.trim()],
                 votes: const {},
                 closesAt: null,
